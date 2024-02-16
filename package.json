@@ -1,0 +1,46 @@
+{
+  "name": "regex-datetime",
+  "version": "0.0.0",
+  "description": "Regular expressions for dates and times",
+  "keywords": [
+    "regex"
+  ],
+  "homepage": "https://github.com/jxdp/regex-datetime",
+  "bugs": {
+    "url": "https://github.com/jxdp/regex-datetime/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jxdp/regex-datetime.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "jxdp",
+    "url": "https://github.com/jxdp"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "lint": "eslint . --ext ts,js,json --fix",
+    "prepublishOnly": "npm run lint && npm run test && npm run build",
+    "test": "node --import tsx --test **/*.test.ts"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.6",
+    "@tsconfig/strictest": "^2.0.5",
+    "@types/luxon": "^3.4.2",
+    "@types/node": "^18.19.15",
+    "eslint": "^8.56.0",
+    "eslint-config-tip": "1.0.2",
+    "luxon": "^3.4.4",
+    "tsx": "^4",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
