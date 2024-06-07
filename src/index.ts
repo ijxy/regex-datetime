@@ -3,19 +3,19 @@ import { Template, hydrateTemplate } from "./template";
 export function isoTime() {
   return customDateTime(({ hh, mm, ss, sss, ZZ }) => {
     return `${hh}:${mm}:${ss}.${sss}${ZZ}`;
-  });
+  })();
 }
 
 export function isoDate() {
   return customDateTime(({ YYYY, MM, DD }) => {
     return `${YYYY}-${MM}-${DD}`;
-  });
+  })();
 }
 
 export function isoDateTime() {
   return customDateTime(({ YYYY, MM, DD, hh, mm, ss, sss, ZZ }) => {
     return `${YYYY}-${MM}-${DD}T${hh}:${mm}:${ss}.${sss}${ZZ}`;
-  });
+  })();
 }
 
 export function customDateTime(template: Template) {
@@ -59,7 +59,7 @@ export function customDateTime(template: Template) {
     sss,
     ZZ,
   });
-  return new RegExp(`^${date_31}|${date_30}|${date_28}|${date_29}$`);
+  return () => new RegExp(`^${date_31}|${date_30}|${date_28}|${date_29}$`);
 }
 
 const hh = "(?:[01][0-9]|2[0-3])";
