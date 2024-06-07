@@ -6,48 +6,63 @@ import { DateTime } from "luxon";
 
 import { customDateTime, isoDate, isoDateTime, isoTime } from "../src";
 
-const customRegex = customDateTime(({ YYYY, MM, DD, hh, mm }) => {
-  return `${DD}/${MM}/${YYYY} @ ${hh}:${mm}`;
-});
-
 test("regex-datetime", async (t) => {
-  await t.test("randomized dates", async (tt) => {
-    const now = DateTime.now();
-    const start = now.minus({ years: 250 });
-    const end = now.plus({ years: 250 });
-    for (
-      let d = start;
-      d < end;
-      d = d.plus({
-        months: crypto.randomInt(0, 12),
-        weeks: crypto.randomInt(0, 4),
-        days: crypto.randomInt(0, 7),
-        hours: crypto.randomInt(0, 24),
-        minutes: crypto.randomInt(0, 60),
-        seconds: crypto.randomInt(0, 60),
-        milliseconds: crypto.randomInt(0, 1000),
-      })
-    ) {
-      await tt.test(d.toISO(), () => {
-        assert.match(d.toISODate(), isoDate());
-        assert.match(d.toISOTime(), isoTime());
-        assert.match(d.toISO(), isoDateTime());
-        assert.match(d.toFormat("dd/MM/yyyy @ HH:mm"), customRegex());
+  await t.test("randomized", () => {
+    for (let i = 0; i < 100000; i++) {
+      testDateTime({
+        year: crypto.randomInt(1000, 10000),
+        month: crypto.randomInt(0, 13),
+        day: crypto.randomInt(0, 33),
+        hour: crypto.randomInt(0, 25),
+        minute: crypto.randomInt(0, 61),
+        second: crypto.randomInt(0, 61),
+        millisecond: crypto.randomInt(0, 1001),
       });
     }
   });
 
-  await t.test("leap days", async (tt) => {
-    for (let year = 1600; year < 4000; year += 1) {
-      const d = DateTime.fromObject({ year, month: 2, day: 29 });
-      if (d.isValid) {
-        await tt.test(d.toISO(), () => {
-          assert.match(d.toISODate(), isoDate());
-          assert.match(d.toISOTime(), isoTime());
-          assert.match(d.toISO(), isoDateTime());
-          assert.match(d.toFormat("dd/MM/yyyy @ HH:mm"), customRegex());
-        });
-      }
+  await t.test("leap days", () => {
+    for (let year = 1600; year < 10000; year++) {
+      testDateTime({
+        year,
+        month: 2,
+        day: 29,
+      });
     }
   });
 });
+
+const customRegex = customDateTime(({ YYYY, MM, DD, hh, mm }) => {
+  return `${DD}/${MM}/${YYYY} @ ${hh}:${mm}`;
+});
+
+type DateTimeObject = {
+  year: number;
+  month: number;
+  day: number;
+  hour?: number;
+  minute?: number;
+  second?: number;
+  millisecond?: number;
+};
+
+function testDateTime(date: DateTimeObject) {
+  const s = toISOString(date);
+  const d = DateTime.fromISO(s);
+  if (d.isValid) {
+    assert.match(d.toISODate(), isoDate());
+    assert.match(d.toISOTime(), isoTime());
+    assert.match(d.toISO(), isoDateTime());
+    assert.match(d.toFormat("dd/MM/yyyy @ HH:mm"), customRegex());
+  } else {
+    assert.doesNotMatch(s, isoDateTime());
+  }
+}
+
+const toISOString = ({ year, month, day, hour, minute, second, millisecond }: DateTimeObject) => {
+  return `${year}-${zeroPad(month, 2)}-${zeroPad(day, 2)}T${zeroPad(hour ?? 0, 2)}:${zeroPad(minute ?? 0, 2)}:${zeroPad(second ?? 0, 2)}.${zeroPad(millisecond ?? 0, 3)}Z`;
+};
+
+function zeroPad(n: number, l: number) {
+  return String(n).padStart(l, "0");
+}
