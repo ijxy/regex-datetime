@@ -25,7 +25,7 @@ isoDate().test("2004-01-16"); // true
 isoTime().test("19:23:25.197Z"); // true
 
 const customDateTimeRegExp = customDateTime(({ YYYY, MM, DD, hh, mm }) => {
-  return `${DD}-${MM}-${YYYY} @ ${hh}:${mm}`;
+  return `${DD}/${MM}/${YYYY} @ ${hh}:${mm}`;
 });
-customDateTimeRegExp.test("16/01/2004 @ 19:23"); // true
+customDateTimeRegExp().test("16/01/2004 @ 19:23"); // true
 ```
